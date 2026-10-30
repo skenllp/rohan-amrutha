@@ -6,7 +6,7 @@
   var CONFIG = {
     // RSVP: set a WhatsApp number (country code, digits only, e.g. '919XXXXXXXXX') and/or an email.
     // With neither set, the RSVP section stays hidden.
-    rsvp: { sheet: 'https://script.google.com/macros/s/AKfycbxnfupFP7bnSykI128zJBtl3oEw5b73v6ddfIjx8ZezD4WRmCgwFtLF0yWzLAcT8qKT/exec', whatsapp: '', email: '' }, // sheet = Google Apps Script web app URL (see google-apps-script/Code.gs),
+    rsvp: { sheet: '', whatsapp: '', email: '' }, // sheet = Google Apps Script web app URL (see google-apps-script/Code.gs),
     ceremonyStart: '12:10', // 24h, Asia/Kolkata (IST, UTC+05:30) on 20 Dec 2026
     music: 'assets/audio/wedding-song.mp3' // Empty = no music, button hidden.
   };
@@ -147,6 +147,7 @@
 
   /* ---------- RSVP (opens WhatsApp / email with a ready-made message) ---------- */
   var rsvpSec = $('#rsvp'), R = CONFIG.rsvp || {};
+  R.sheet = document.body.getAttribute('data-sheet') || R.sheet; // each page can post to its own sheet
   if (rsvpSec && (R.sheet || R.whatsapp || R.email)) {
     rsvpSec.hidden = false;
     var form = $('#rsvpForm'), err = $('#rsvpErr'), mail = $('#rsvpMail');
