@@ -179,13 +179,16 @@
       if (R.sheet) {
         var btn = $('#rsvpSend'), fail = $('#rsvpFail');
         btn.disabled = true; btn.textContent = 'Sending\u2026'; fail.hidden = true;
+        var done = function () { form.classList.add('sent'); $('#rsvpThanks').hidden = false; };
+        var failed = function () { fail.hidden = false; btn.disabled = false; btn.textContent = 'Send RSVP'; };
         fetch(R.sheet, {
-          method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({ name: f.name.value.trim(), attending: yes ? 'Yes' : 'No', guests: yes ? f.guests.value : 0, message: f.msg.value.trim(), side: SIDE })
-        }).then(function () {
-          form.classList.add('sent'); $('#rsvpThanks').hidden = false;
+        }).then(function (r) { return r.json(); }).then(function (j) {
+          if (j && j.ok === false) failed(); else done();
         }).catch(function () {
-          fail.hidden = false; btn.disabled = false; btn.textContent = 'Send RSVP';
+          // No readable reply (browser CORS quirk): the request was still sent, so only fail when offline.
+          if (navigator.onLine === false) failed(); else done();
         });
         return;
       }
